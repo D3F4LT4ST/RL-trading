@@ -19,19 +19,13 @@ def engineer_forex_features(
 
 def _engineer_forex_features_strategy1(
     data: Dict[str, pd.DataFrame],
-    target_pair: str,
     recent_returns: int
 ) -> pd.DataFrame:
     forex_features_df = pd.DataFrame({'<DT>' : pd.Series(dtype=FOREX_COLS['<DT>'])})
 
     for pair in data:
         pair_df = data[pair]
-        pair_df.drop(['<HIGH>', '<LOW>'], axis=1, inplace=True)
-
-        if pair != target_pair:
-            pair_df.drop(['<OPEN>'], axis=1, inplace=True)
-        else:
-            pair_df.rename(columns={'<OPEN>' : f'<{pair} OPEN>'}, inplace=True)
+        pair_df.drop(['<OPEN>', '<HIGH>', '<LOW>'], axis=1, inplace=True)
 
         pair_df.rename(columns={'<CLOSE>' : f'<{pair} CLOSE>'}, inplace=True)
 
@@ -52,8 +46,7 @@ def _engineer_forex_features_strategy1(
         for i in range(0, recent_returns):
             forex_features_df[f'<{close_price_col.strip("<>")} RECENT RETURN {i+1}>'] = log_returns.shift(i)
 
-        if target_pair not in close_price_col:
-            forex_features_df.drop(close_price_col, axis=1, inplace=True)
+        forex_features_df.drop(close_price_col, axis=1, inplace=True)
     
     forex_features_df.dropna(inplace=True)
     forex_features_df.reset_index(drop=True, inplace=True)
