@@ -44,7 +44,7 @@ def _engineer_forex_features_strategy1(
     
         log_returns = np.log(forex_features_df[close_price_col] / forex_features_df[close_price_col].shift(1))
         for i in range(0, recent_returns):
-            forex_features_df[f'<{close_price_col.strip("<>")} RECENT RETURN {i+1}>'] = log_returns.shift(i + 1)
+            forex_features_df[f'<{close_price_col.strip("<>")} RECENT RETURN {i+1}>'] = log_returns.shift(i)
 
         forex_features_df.drop(close_price_col, axis=1, inplace=True)
     
