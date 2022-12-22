@@ -24,15 +24,14 @@ def _engineer_forex_features_strategy1(
     forex_features_df = pd.DataFrame({'<DT>' : pd.Series(dtype=FOREX_COLS['<DT>'])})
 
     for pair in data:
-        pair_df = data[pair]
-        pair_df.drop(['<OPEN>', '<HIGH>', '<LOW>'], axis=1, inplace=True)
-
+        pair_df = data[pair].drop(['<OPEN>', '<HIGH>', '<LOW>'], axis=1)
         pair_df.rename(columns={'<CLOSE>' : f'<{pair} CLOSE>'}, inplace=True)
 
         forex_features_df = forex_features_df.merge(pair_df, on='<DT>', how='outer', suffixes=[None, None])
     
     na_dt = forex_features_df[pd.isnull(forex_features_df).any(axis=1)]['<DT>']
-    forex_features_df = forex_features_df[forex_features_df['<DT>'] > na_dt.iloc[-1]].reset_index(drop=True)
+    if len(na_dt) > 0:
+        forex_features_df = forex_features_df[forex_features_df['<DT>'] > na_dt.iloc[-1]].reset_index(drop=True)
 
     close_price_cols = [col for col in forex_features_df.columns if 'CLOSE' in col]
 
