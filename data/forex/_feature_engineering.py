@@ -39,13 +39,17 @@ def _engineer_forex_features_strategy1(
     forex_features_df['<HOUR SIN>'] = np.sin(2 * np.pi * forex_features_df['<DT>'].dt.hour / 24).astype(np.float32)
     forex_features_df['<WEEKDAY SIN>'] = np.sin(2 * np.pi * forex_features_df['<DT>'].dt.weekday / 7).astype(np.float32)
 
+    recent_returns_features = {}
+
     for close_price_col in close_price_cols:
     
         log_returns = np.log(forex_features_df[close_price_col] / forex_features_df[close_price_col].shift(1))
         for i in range(0, recent_returns):
-            forex_features_df[f'<{close_price_col.strip("<>")} RECENT RETURN {i+1}>'] = log_returns.shift(i)
+            recent_returns_features[f'<{close_price_col.strip("<>")} RECENT RETURN {i+1}>'] = log_returns.shift(i)
 
-        forex_features_df.drop(close_price_col, axis=1, inplace=True)
+    forex_features_df = pd.concat([forex_features_df, pd.DataFrame(recent_returns_features)], axis=1)
+
+    forex_features_df.drop(close_price_cols, axis=1, inplace=True)
     
     forex_features_df.dropna(inplace=True)
     forex_features_df.reset_index(drop=True, inplace=True)
