@@ -24,8 +24,8 @@ def _engineer_forex_features_strategy1(
     forex_features_df = pd.DataFrame({'<DT>' : pd.Series(dtype=FOREX_COLS['<DT>'])})
 
     for pair in data:
-        pair_df = data[pair].drop(['<OPEN>', '<HIGH>', '<LOW>'], axis=1)
-        pair_df.rename(columns={'<CLOSE>' : f'<{pair} CLOSE>'}, inplace=True)
+        pair_df = data[pair].drop(['<CLOSE>', '<HIGH>', '<LOW>'], axis=1)
+        pair_df.rename(columns={'<OPEN>' : f'<{pair} OPEN>'}, inplace=True)
 
         forex_features_df = forex_features_df.merge(pair_df, on='<DT>', how='outer', suffixes=[None, None])
     
@@ -33,7 +33,7 @@ def _engineer_forex_features_strategy1(
     if len(na_dt) > 0:
         forex_features_df = forex_features_df[forex_features_df['<DT>'] > na_dt.iloc[-1]].reset_index(drop=True)
 
-    close_price_cols = [col for col in forex_features_df.columns if 'CLOSE' in col]
+    open_price_cols = [col for col in forex_features_df.columns if 'OPEN' in col]
 
     forex_features_df['<MIN SIN>'] = np.sin(2 * np.pi * forex_features_df['<DT>'].dt.minute / 60).astype(np.float32)
     forex_features_df['<HOUR SIN>'] = np.sin(2 * np.pi * forex_features_df['<DT>'].dt.hour / 24).astype(np.float32)
@@ -41,15 +41,15 @@ def _engineer_forex_features_strategy1(
 
     recent_returns_features = {}
 
-    for close_price_col in close_price_cols:
+    for open_price_col in open_price_cols:
     
-        log_returns = np.log(forex_features_df[close_price_col] / forex_features_df[close_price_col].shift(1))
+        log_returns = np.log(forex_features_df[open_price_col] / forex_features_df[open_price_col].shift(1))
         for i in range(0, recent_returns):
-            recent_returns_features[f'<{close_price_col.strip("<>")} RECENT RETURN {i+1}>'] = log_returns.shift(i)
+            recent_returns_features[f'<{open_price_col.strip("<>")} RECENT RETURN {i+1}>'] = log_returns.shift(i)
 
     forex_features_df = pd.concat([forex_features_df, pd.DataFrame(recent_returns_features)], axis=1)
 
-    forex_features_df.drop(close_price_cols, axis=1, inplace=True)
+    forex_features_df.drop(open_price_cols, axis=1, inplace=True)
     
     forex_features_df.dropna(inplace=True)
     forex_features_df.reset_index(drop=True, inplace=True)
