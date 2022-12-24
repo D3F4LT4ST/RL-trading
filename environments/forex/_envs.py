@@ -85,7 +85,10 @@ class ForexEnv(gym.Env, ABC):
 
         return self._get_observation(), self._reward, self._done, {}
 
-    def render(self):
+    def render(
+        self,
+        mode: str='human'
+    ):
         plt.figure(figsize=(14,5))
         plt.title('Portfolio Return vs Market Return')
         plt.plot(
@@ -193,9 +196,10 @@ class ForexEnvBasic(ForexEnv):
 
     def render(
             self, 
+            mode: str='human',
             show_trades: bool=True
         ):
-        super().render()
+        super().render(mode)
 
         if not show_trades: return
 
