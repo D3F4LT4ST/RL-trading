@@ -74,7 +74,7 @@ class ForexEnv(gym.Env, ABC):
         return np.concatenate([
             self._features_df.iloc[self._t].values,
             [float(getattr(self, f'_{attr}')) for attr in self._include_in_obs]
-        ])
+        ], dtype=np.float32)
 
     def _step(self, action: int):
         self._t += 1
