@@ -1,8 +1,9 @@
 import os
 import numpy as np
 from enum import Enum
+from config import DATA_PATH
 
-FOREX_DATA_PATH = os.path.abspath(os.path.join(os.getcwd(), '../../Data/Forex'))
+FOREX_DATA_PATH = os.path.join(DATA_PATH, 'Forex')
 
 FOREX_COLS = {
     '<DT>' : 'datetime64[ns]', 
