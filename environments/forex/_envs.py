@@ -87,18 +87,22 @@ class ForexEnv(gym.Env, ABC):
 
     def render(
         self,
-        mode: str='human'
+        mode: str='human',
+        start_t: int=0,
+        end_t: int=None
     ):
+        if not end_t: end_t = self._t
+
         plt.figure(figsize=(14,5))
         plt.title('Portfolio Return vs Market Return')
         plt.plot(
-            self._target_prices_df.loc[:self._t, '<DT>'], 
-            np.array(self._history['portfolio_value']) / self._init_portfolio_value, 
+            [t for t in range(start_t, end_t + 1)], 
+            np.array(self._history['portfolio_value'][start_t : end_t + 1]) / self._init_portfolio_value, 
             label='Portfolio'
         )
         plt.plot(
-            self._target_prices_df.loc[:self._t, '<DT>'], 
-            self._target_prices_df.loc[:self._t, '<CLOSE>'] / self._target_prices_df.loc[0, '<CLOSE>'], 
+            [t for t in range(start_t, end_t + 1)], 
+            self._target_prices_df.loc[start_t : end_t, '<CLOSE>'] / self._target_prices_df.loc[0, '<CLOSE>'], 
             label='Market'
         )
         plt.legend()
@@ -197,28 +201,36 @@ class ForexEnvBasic(ForexEnv):
     def render(
             self, 
             mode: str='human',
+            start_t: int=0,
+            end_t: int=None,
+            show_returns: bool=True,
             show_trades: bool=True
         ):
-        super().render(mode)
+        if show_returns:
+            super().render(mode, start_t, end_t)
 
+        if not end_t: end_t = self._t
         if not show_trades: return
 
         plt.figure(figsize=(14,5))
         plt.title('Trades')
         plt.plot(
-            self._target_prices_df.loc[:self._t, '<DT>'], 
-            self._target_prices_df.loc[:self._t, '<OPEN>'], 
+            [t for t in range(start_t, end_t + 1)], 
+            self._target_prices_df.loc[start_t : end_t, '<OPEN>'], 
             label='Open'
         )
         plt.plot(
-            self._target_prices_df.loc[:self._t, '<DT>'], 
-            self._target_prices_df.loc[:self._t, '<CLOSE>'], 
+           [t for t in range(start_t, end_t + 1)], 
+            self._target_prices_df.loc[start_t : end_t, '<CLOSE>'], 
             label='Close'
         )
         plt.scatter(
-            self._target_prices_df.loc[:self._t, '<DT>'], 
-            self._target_prices_df.loc[:self._t, '<OPEN>'], 
-            color=list(map(lambda position: self._position_color_map[position], self._history['position'])),
+            [t for t in range(start_t, end_t + 1)], 
+            self._target_prices_df.loc[start_t : end_t, '<OPEN>'], 
+            color=list(
+                map(lambda position: self._position_color_map[position], 
+                self._history['position'][start_t : end_t + 1])
+            ),
             s=80
         )
         plt.legend()
