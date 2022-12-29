@@ -48,6 +48,22 @@ class ForexEnv(gym.Env, ABC):
         self._reset()
 
     @property
+    def target_prices_df(self) -> pd.DataFrame:
+        return self._target_prices_df
+
+    @target_prices_df.setter
+    def target_prices_df(self, target_prices_df):
+        self._target_prices_df = target_prices_df
+
+    @property
+    def features_df(self) -> pd.DataFrame:
+        return self._features_df
+
+    @features_df.setter
+    def features_df(self, features_df):
+        self._features_df = features_df
+
+    @property
     def history(self) -> Dict[str, List]:
         return self._history
 
