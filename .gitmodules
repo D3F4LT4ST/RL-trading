@@ -1,0 +1,3 @@
+[submodule "rl-baselines3-zoo"]
+	path = rl-baselines3-zoo
+	url = https://github.com/D3F4LT4ST/rl-baselines3-zoo
