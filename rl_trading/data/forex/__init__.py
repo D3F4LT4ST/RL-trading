@@ -12,6 +12,7 @@ from ._feature_engineering import (
 )
 
 __all__ = [
+    'FOREX_PAIRS',
     'FOREX_COLS',
     'ForexDataSource',
     'load_processed_forex_data',

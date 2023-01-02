@@ -6,10 +6,10 @@ from abc import ABC
 from typing import Set, List, Dict, Tuple
 from .._common import Actions, Positions
 from ._components import (
-    OrderStrategy,
-    MarketOrderStrategy,
-    RewardStrategy, 
-    TradingCostsStrategy
+    ForexOrderStrategy,
+    ForexMarketOrderStrategy,
+    ForexRewardStrategy, 
+    ForexTradingCostsStrategy
 )
 
 class ForexEnv(gym.Env, ABC):
@@ -21,9 +21,9 @@ class ForexEnv(gym.Env, ABC):
         target_prices_df: pd.DataFrame, 
         features_df: pd.DataFrame,
         portfolio_value: float,
-        order_strategy: OrderStrategy,
-        reward_strategy: RewardStrategy,
-        trading_costs_strategy: TradingCostsStrategy,
+        order_strategy: ForexOrderStrategy,
+        reward_strategy: ForexRewardStrategy,
+        trading_costs_strategy: ForexTradingCostsStrategy,
         include_in_obs: List[str]=[]
     ):
         self._target_prices_df = target_prices_df
@@ -132,9 +132,9 @@ class ForexEnvBasic(ForexEnv):
         features_df: pd.DataFrame, 
         portfolio_value: float,
         allowed_actions: Set[Actions],
-        market_order_strategy: MarketOrderStrategy,
-        reward_strategy: RewardStrategy,
-        trading_costs_strategy: TradingCostsStrategy,
+        market_order_strategy: ForexMarketOrderStrategy,
+        reward_strategy: ForexRewardStrategy,
+        trading_costs_strategy: ForexTradingCostsStrategy,
         include_in_obs: List[str]=[],
     ):
         super().__init__(

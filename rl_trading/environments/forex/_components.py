@@ -18,13 +18,13 @@ class ForexEnvComponent(ABC):
         self._env = env
 
 
-class OrderStrategy(ForexEnvComponent):
+class ForexOrderStrategy(ForexEnvComponent):
 
     def __init__(self) -> None:
         super().__init__()
 
 
-class MarketOrderStrategy(OrderStrategy):
+class ForexMarketOrderStrategy(ForexOrderStrategy):
 
     def __init__(self) -> None:
         super().__init__()
@@ -34,7 +34,7 @@ class MarketOrderStrategy(OrderStrategy):
         pass
 
 
-class MarketOrderStrategyFixed(MarketOrderStrategy):
+class ForexMarketOrderStrategyFixed(ForexMarketOrderStrategy):
 
     def __init__(self, order_size: float) -> None:
         super().__init__()
@@ -44,7 +44,7 @@ class MarketOrderStrategyFixed(MarketOrderStrategy):
         return self._order_size
     
 
-class MarketOrderStrategyAllIn(MarketOrderStrategy):
+class ForexMarketOrderStrategyAllIn(ForexMarketOrderStrategy):
 
     def __init__(self) -> None:
         super().__init__()
@@ -53,7 +53,7 @@ class MarketOrderStrategyAllIn(MarketOrderStrategy):
         return self._env._portfolio_value
 
 
-class RewardStrategy(ForexEnvComponent):
+class ForexRewardStrategy(ForexEnvComponent):
 
     def __init__(self) -> None:
         super().__init__()
@@ -63,7 +63,7 @@ class RewardStrategy(ForexEnvComponent):
         pass
 
 
-class RewardStrategyLogPortfolioReturn(RewardStrategy):
+class ForexRewardStrategyLogPortfolioReturn(ForexRewardStrategy):
 
     def __init__(self) -> None:
         super().__init__()
@@ -75,11 +75,11 @@ class RewardStrategyLogPortfolioReturn(RewardStrategy):
             return 0
 
 
-class TradingCostsStrategy(ForexEnvComponent):
+class ForexTradingCostsStrategy(ForexEnvComponent):
 
     def __init__(
         self, 
-        trading_costs_strategy_inner: 'TradingCostsStrategy'=None
+        trading_costs_strategy_inner: 'ForexTradingCostsStrategy'=None
     ) -> None:
         super().__init__()
         self._trading_costs_strategy_inner = trading_costs_strategy_inner
@@ -91,12 +91,12 @@ class TradingCostsStrategy(ForexEnvComponent):
             return 0 
 
 
-class TradingCostsStrategyRelativeFee(TradingCostsStrategy):
+class ForexTradingCostsStrategyRelativeFee(ForexTradingCostsStrategy):
 
     def __init__(
         self, 
         fee_rate: float,
-        trading_costs_strategy_inner: 'TradingCostsStrategy'=None
+        trading_costs_strategy_inner: 'ForexTradingCostsStrategy'=None
     ) -> None:
         super().__init__(trading_costs_strategy_inner)
         self._fee_rate = fee_rate
@@ -114,12 +114,12 @@ class TradingCostsStrategyRelativeFee(TradingCostsStrategy):
         return super().compute_costs() + relative_fee
 
 
-class TradingCostsStrategySpread(TradingCostsStrategy):
+class ForexTradingCostsStrategySpread(ForexTradingCostsStrategy):
 
     def __init__(
         self, 
         spread: float,
-        trading_costs_strategy_inner: 'TradingCostsStrategy'=None,
+        trading_costs_strategy_inner: 'ForexTradingCostsStrategy'=None,
     ) -> None:
         super().__init__(trading_costs_strategy_inner)
         self._spread = spread
