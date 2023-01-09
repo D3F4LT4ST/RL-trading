@@ -52,7 +52,7 @@ class ForexEnv(gym.Env, ABC):
         return self._target_prices_df
 
     @target_prices_df.setter
-    def target_prices_df(self, target_prices_df):
+    def target_prices_df(self, target_prices_df: pd.DataFrame):
         self._target_prices_df = target_prices_df
 
     @property
@@ -60,25 +60,28 @@ class ForexEnv(gym.Env, ABC):
         return self._features_df
 
     @features_df.setter
-    def features_df(self, features_df):
+    def features_df(self, features_df: pd.DataFrame):
         self._features_df = features_df
 
     @property
     def history(self) -> Dict[str, List]:
         return self._history
 
-    def _reset(self):
+    def __len__(self) -> int:
+        return len(self._target_prices_df)
+
+    def _reset(self, start_t: int=0):
         self._done = False
         self._portfolio_value = self._init_portfolio_value
-        self._t = 0
+        self._t = start_t
         self._reward = 0
         self._history = {
             'portfolio_value' : [],
             'reward' : [],
         }
         
-    def reset(self) -> np.ndarray:
-        self._reset()
+    def reset(self, start_t: int=0) -> np.ndarray:
+        self._reset(start_t)
         self._update_history()
         return self._get_observation()
 
@@ -166,8 +169,8 @@ class ForexEnvBasic(ForexEnv):
 
         self._reset()
 
-    def _reset(self):
-        super()._reset()
+    def _reset(self, start_t: int=0):
+        super()._reset(start_t)
         self._action = Actions.CLOSE
         self._position = Positions.NONE
         self._trade = False
@@ -211,7 +214,7 @@ class ForexEnvBasic(ForexEnv):
 
         self._reward = self._reward_strategy.compute_reward()
 
-        if self._t == len(self._target_prices_df) - 1:
+        if self._t == len(self) - 1:
             self._done = True
 
     def render(
