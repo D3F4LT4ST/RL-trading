@@ -82,7 +82,6 @@ class ForexEnv(gym.Env, ABC):
         
     def reset(self, start_t: int=0) -> np.ndarray:
         self._reset(start_t)
-        self._update_history()
         return self._get_observation()
 
     def _update_history(self):
@@ -91,7 +90,7 @@ class ForexEnv(gym.Env, ABC):
         
     def _get_observation(self) -> np.ndarray:
         return np.concatenate([
-            self._features_df.iloc[self._t].values,
+            self._features_df.iloc[min(self._t, len(self) - 1)].values,
             [float(getattr(self, f'_{attr}')) for attr in self._include_in_obs]
         ], dtype=np.float32)
 
@@ -115,13 +114,13 @@ class ForexEnv(gym.Env, ABC):
         plt.figure(figsize=(14,5))
         plt.title('Portfolio Return vs Market Return')
         plt.plot(
-            [t for t in range(start_t, end_t + 1)], 
-            np.array(self._history['portfolio_value'][start_t : end_t + 1]) / self._init_portfolio_value, 
+            [t for t in range(start_t, end_t)], 
+            np.array(self._history['portfolio_value'][start_t : end_t]) / self._init_portfolio_value, 
             label='Portfolio'
         )
         plt.plot(
-            [t for t in range(start_t, end_t + 1)], 
-            self._target_prices_df.loc[start_t : end_t, '<CLOSE>'] / self._target_prices_df.loc[0, '<CLOSE>'], 
+            [t for t in range(start_t, end_t)], 
+            self._target_prices_df.loc[start_t : end_t - 1, '<CLOSE>'] / self._target_prices_df.loc[0, '<CLOSE>'], 
             label='Market'
         )
         plt.legend()
@@ -190,16 +189,16 @@ class ForexEnvBasic(ForexEnv):
         self._history['last_trade_price'].append(self._last_trade_price)
 
     def _step(self, action: int) -> Tuple[np.ndarray, float, bool, Dict]:
-        super()._step(action)
 
         self._action = self._action_map(action)
         self._trade = self._position.value != self._action
 
         open_price = self._target_prices_df.loc[self._t, '<OPEN>']
         close_price = self._target_prices_df.loc[self._t, '<CLOSE>']
-        prev_close_price = self._target_prices_df.loc[self._t - 1, '<CLOSE>']
 
-        self._portfolio_value += self._position.value * self._order_size * (open_price - prev_close_price) / self._last_trade_price
+        if self._t > 0:
+            prev_close_price = self._target_prices_df.loc[self._t - 1, '<CLOSE>']
+            self._portfolio_value += self._position.value * self._order_size * (open_price - prev_close_price) / self._last_trade_price
         
         if self._trade: 
             self._last_trade_price = open_price
@@ -214,7 +213,9 @@ class ForexEnvBasic(ForexEnv):
 
         self._reward = self._reward_strategy.compute_reward()
 
-        if self._t == len(self) - 1:
+        super()._step(action)
+
+        if self._t == len(self):
             self._done = True
 
     def render(
@@ -234,21 +235,21 @@ class ForexEnvBasic(ForexEnv):
         plt.figure(figsize=(14,5))
         plt.title('Trades')
         plt.plot(
-            [t for t in range(start_t, end_t + 1)], 
-            self._target_prices_df.loc[start_t : end_t, '<OPEN>'], 
+            [t for t in range(start_t, end_t)], 
+            self._target_prices_df.loc[start_t : end_t - 1, '<OPEN>'], 
             label='Open'
         )
         plt.plot(
-           [t for t in range(start_t, end_t + 1)], 
-            self._target_prices_df.loc[start_t : end_t, '<CLOSE>'], 
+           [t for t in range(start_t, end_t)], 
+            self._target_prices_df.loc[start_t : end_t - 1, '<CLOSE>'], 
             label='Close'
         )
         plt.scatter(
-            [t for t in range(start_t, end_t + 1)], 
-            self._target_prices_df.loc[start_t : end_t, '<OPEN>'], 
+            [t for t in range(start_t, end_t)], 
+            self._target_prices_df.loc[start_t : end_t - 1, '<OPEN>'], 
             color=list(
                 map(lambda position: self._position_color_map[position], 
-                self._history['position'][start_t : end_t + 1])
+                self._history['position'][start_t : end_t])
             ),
             s=80
         )

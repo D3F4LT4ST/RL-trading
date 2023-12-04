@@ -69,8 +69,13 @@ class ForexRewardStrategyLogPortfolioReturn(ForexRewardStrategy):
         super().__init__()
 
     def compute_reward(self) -> float:
-        if self._env._portfolio_value != self._env.history['portfolio_value'][-1]:
-            return np.log(self._env._portfolio_value / self._env.history['portfolio_value'][-1])
+        if self._env._t > 0:
+            prev_portfolio_value = self._env.history['portfolio_value'][-1]
+        else:
+            prev_portfolio_value = self._env._init_portfolio_value
+
+        if self._env._portfolio_value != prev_portfolio_value:
+            return np.log(self._env._portfolio_value / prev_portfolio_value)
         else:
             return 0
 
@@ -104,10 +109,15 @@ class ForexTradingCostsStrategyRelativeFee(ForexTradingCostsStrategy):
     def compute_costs(self) -> float:
         relative_fee = 0
 
+        if self._env._t > 0:
+            prev_position = self._env.history['position'][-1]
+        else:
+            prev_position = Positions.NONE
+
         if self._env._trade:
             relative_fee = (
-                self._env._trade_size * 
-                abs(self._env._action - self._env.history['position'][-1]) * 
+                self._env._order_size * 
+                abs(self._env._action - prev_position) * 
                 self._fee_rate
             )
         
@@ -128,7 +138,11 @@ class ForexTradingCostsStrategySpread(ForexTradingCostsStrategy):
         spread_costs = 0
 
         if self._env._trade:
-            prev_position = self._env.history['position'][-1]
+
+            if self._env._t > 0:
+                prev_position = self._env.history['position'][-1]
+            else:
+                prev_position = Positions.NONE
 
             if (
                 (prev_position == Positions.NONE and self._env._action == Actions.BUY)):
