@@ -80,6 +80,33 @@ class ForexRewardStrategyLogPortfolioReturn(ForexRewardStrategy):
             return 0
 
 
+class ForexRewardStrategyWeightedLogPortfolioReturns(ForexRewardStrategyLogPortfolioReturn):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._position_t = 1
+        self._position_t_sum = 1
+        self._weighted_reward = 0
+
+    def compute_reward(self) -> float:
+
+        current_log_return = super().compute_reward()
+
+        if self._env._trade:
+            self._position_t = 1
+            self._position_t_sum = 1
+            self._weighted_reward = current_log_return
+        else:
+            self._position_t += 1
+            self._weighted_reward = (
+                (self._weighted_reward * self._position_t_sum + current_log_return * self._position_t) / 
+                (self._position_t_sum + self._position_t)
+            )
+            self._position_t_sum += self._position_t
+
+        return self._weighted_reward
+
+
 class ForexTradingCostsStrategy(ForexEnvComponent):
 
     def __init__(
