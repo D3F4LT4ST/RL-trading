@@ -1,0 +1,15 @@
+ta
+gym
+tqdm
+numpy
+pandas
+matplotlib
+stable-baselines3
+sb3-contrib
+lightgbm
+scikit-learn
+statsmodels
+joblib
+optuna
+tensorboard
+quantstats
