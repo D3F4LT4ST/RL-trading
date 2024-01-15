@@ -31,6 +31,17 @@ def engineer_forex_features(
     strategy: ForexFeEngStrategy,
     strategy_params: Dict
 ) -> pd.DataFrame:
+    '''
+    Performs feature engineering according to the specified strategy.
+
+    Args:
+        data: dictionary of dataframes for each pair
+        strategy: feature engineering strategy
+        strategy_params: feature engineering strategy parameters
+
+    Returns:
+        Merged features dataframe
+    '''
     if strategy == ForexFeEngStrategy.BASIC:
         return _engineer_forex_features_basic(data, **strategy_params)
     elif strategy == ForexFeEngStrategy.TA:
@@ -41,6 +52,16 @@ def _engineer_forex_features_basic(
     data: Dict[str, pd.DataFrame],
     recent_returns: int
 ) -> pd.DataFrame:
+    '''
+    Basic feature engineering strategy.
+
+    Args:
+        data: collection of dataframes for each pair
+        recent_returns: # of recent returns to include
+
+    Returns:
+        Features dataframe
+    '''
     forex_features_df = pd.DataFrame({'<DT>' : pd.Series(dtype=FOREX_COLS['<DT>'])})
 
     for pair in data:
@@ -81,6 +102,16 @@ def _engineer_forex_features_ta(
     data: Dict[str, pd.DataFrame],
     lags: int
 ) -> pd.DataFrame:
+    '''
+    Technical analysis feature engineering strategy.
+
+    Args:
+        data: collection of dataframes for each pair
+        lags: # of indicator lags to include
+
+    Returns:
+        Features dataframe
+    '''
     forex_features_df = pd.DataFrame({'<DT>' : pd.Series(dtype=FOREX_COLS['<DT>'])})
 
     for pair in data:

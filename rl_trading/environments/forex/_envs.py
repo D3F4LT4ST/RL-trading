@@ -13,7 +13,9 @@ from ._components import (
 )
 
 class ForexEnv(gym.Env, ABC):
-
+    '''
+    Base class for forex environments.
+    '''
     metadata = {"render.modes": ["human"]}
 
     def __init__(
@@ -26,6 +28,16 @@ class ForexEnv(gym.Env, ABC):
         trading_costs_strategy: ForexTradingCostsStrategy,
         include_in_obs: List[str]=[]
     ):
+        '''
+        Args:
+            target_prices_df: target pair dataframe
+            features_df: features dataframe
+            portfolio_value: starting portfolio balance in base currency
+            order_strategy: order placing strategy
+            reward_strategy: reward calculation strategy
+            trading_costs_strategy: trading costs calulation strategy
+            include_in_obs: class attributes to include in observation vector
+        '''
         self._target_prices_df = target_prices_df
         self._features_df = features_df
         self._init_portfolio_value = portfolio_value
@@ -71,6 +83,12 @@ class ForexEnv(gym.Env, ABC):
         return len(self._target_prices_df)
 
     def _reset(self, start_t: int=0):
+        '''
+        Resets the environment to the inital state
+
+        Args:
+            start_t: start timestamp
+        '''
         self._done = False
         self._portfolio_value = self._init_portfolio_value
         self._t = start_t
@@ -85,16 +103,26 @@ class ForexEnv(gym.Env, ABC):
         return self._get_observation()
 
     def _update_history(self):
+        '''
+        Updates history.
+        '''
         self._history['portfolio_value'].append(self._portfolio_value)
         self._history['reward'].append(self._reward)
         
     def _get_observation(self) -> np.ndarray:
+        '''
+        Returns:
+            Current observation vector
+        '''
         return np.concatenate([
             self._features_df.iloc[min(self._t, len(self) - 1)].values,
             [float(getattr(self, f'_{attr}')) for attr in self._include_in_obs]
         ], dtype=np.float32)
 
     def _step(self, action: int):
+        '''
+        Processes one timestamp of the environment.
+        '''
         self._t += 1
     
     def step(self, action: int) -> Tuple[np.ndarray, float, bool, Dict]:
@@ -128,7 +156,9 @@ class ForexEnv(gym.Env, ABC):
 
 
 class ForexEnvBasic(ForexEnv):
-
+    '''
+    Basic forex environemnt. Allows three basic actions and market orders.
+    '''
     def __init__(self, 
         target_prices_df: pd.DataFrame, 
         features_df: pd.DataFrame, 
@@ -139,6 +169,17 @@ class ForexEnvBasic(ForexEnv):
         trading_costs_strategy: ForexTradingCostsStrategy,
         include_in_obs: List[str]=[],
     ):
+        '''
+        Args:
+            target_prices_df: target pair dataframe
+            features_df: features dataframe
+            portfolio_value: starting portfolio balance in base currency
+            allowed_actions: allowed actions
+            market_order_strategy: market order placing strategy
+            reward_strategy: reward calculation strategy
+            trading_costs_strategy: trading costs calulation strategy
+            include_in_obs: class attributes to include in observation vector
+        '''
         super().__init__(
             target_prices_df, 
             features_df, 
@@ -169,6 +210,12 @@ class ForexEnvBasic(ForexEnv):
         self._reset()
 
     def _reset(self, start_t: int=0):
+        '''
+        Resets the environment to the inital state
+
+        Args:
+            start_t: start timestamp
+        '''
         super()._reset(start_t)
         self._action = Actions.CLOSE
         self._position = Positions.NONE
@@ -182,6 +229,9 @@ class ForexEnvBasic(ForexEnv):
         self._history['last_trade_price'] = []
 
     def _update_history(self):
+        '''
+        Updates history.
+        '''
         super()._update_history()
         self._history['position'].append(self._position)
         self._history['trading_costs'].append(self._trading_costs)
@@ -189,7 +239,9 @@ class ForexEnvBasic(ForexEnv):
         self._history['last_trade_price'].append(self._last_trade_price)
 
     def _step(self, action: int) -> Tuple[np.ndarray, float, bool, Dict]:
-
+        '''
+        Processes one timestamp of the environment.
+        '''
         self._action = self._action_map(action)
         self._trade = self._position.value != self._action
 
@@ -219,13 +271,13 @@ class ForexEnvBasic(ForexEnv):
             self._done = True
 
     def render(
-            self, 
-            mode: str='human',
-            start_t: int=0,
-            end_t: int=None,
-            show_returns: bool=True,
-            show_trades: bool=True
-        ):
+        self, 
+        mode: str='human',
+        start_t: int=0,
+        end_t: int=None,
+        show_returns: bool=True,
+        show_trades: bool=True
+    ):
         if show_returns:
             super().render(mode, start_t, end_t)
 

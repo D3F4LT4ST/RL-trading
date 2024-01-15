@@ -12,7 +12,17 @@ def load_processed_forex_data(
     pairs: List[str],
     version: str=None
 ) -> Dict[str, pd.DataFrame]:
+    '''
+    Loads processed forex data.
 
+    Args:
+        data_source: forex data source
+        pairs: selected pairs
+        version: data version
+    
+    Returns:
+        Processed dataframes for each pair
+    '''
     proc_data_path = f'{data_path}/Forex/{data_source.value}/Processed'
     data = {}
 
@@ -33,6 +43,16 @@ def load_raw_forex_data(
     data_source: ForexDataSource, 
     pairs: List[str]
 ) -> Dict[str, pd.DataFrame]:
+    '''
+    Loads original forex data.
+
+    Args:
+        data_source: forex data source
+        pairs: selected pairs
+    
+    Returns:
+        Original dataframes for each pair
+    '''
     if data_source == ForexDataSource.FOREXTESTER:
         return _load_raw_forextester_forex_data(data_path, pairs)
     elif data_source == ForexDataSource.HISTDATA:
@@ -43,7 +63,16 @@ def _load_raw_histdata_forex_data(
     data_path: str,
     pairs: List[str]
 ) -> Dict[str, pd.DataFrame]:
+    '''
+    Loads original forex data from HistData.
 
+    Args:
+        data_path: data path
+        pairs: selected pairs
+
+    Returns:
+        Original dataframes for each pair
+    '''
     histdata_raw_data_path = f'{data_path}/Forex/HistData/Raw'
     histdata_data = {}
 
@@ -77,7 +106,16 @@ def _load_raw_forextester_forex_data(
     data_path: str,
     pairs: List[str]
 ) -> Dict[str, pd.DataFrame]:
+    '''
+    Loads original forex data from ForexTester.
 
+    Args:
+        data_path: data path
+        pairs: selected pairs
+
+    Returns:
+        Original dataframes for each pair
+    '''
     forextester_raw_data_path = f'{data_path}/Forex/ForexTester/Raw'
     forextester_data = {}
 

@@ -29,5 +29,8 @@ FOREX_COLS = {
 }
 
 class ForexDataSource(Enum):
+    '''
+    Forex data sources.
+    '''
     HISTDATA = 'HistData'
     FOREXTESTER = 'ForexTester'

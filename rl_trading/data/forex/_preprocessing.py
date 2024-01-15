@@ -8,6 +8,17 @@ def preprocess_forex_data(
     data_source: ForexDataSource,
     agg_interval: int
 ):
+    '''
+    Preprocesses forex data.
+
+    Args:
+        data: collection of dataframes for each pair
+        data_source: data source
+        agg_interval: aggregation interval
+    
+    Returns:
+        Preprocesed dataframes for each pair
+    '''
     if data_source == ForexDataSource.FOREXTESTER:
         return _preprocess_forextester_forex_data(data, agg_interval)
 
@@ -16,6 +27,16 @@ def _preprocess_forextester_forex_data(
     data: Dict[str, pd.DataFrame],
     agg_interval: int
 ):
+    '''
+    Preprocesses forex data from ForexTester.
+
+    Args:
+        data: collection of dataframes for each pair
+        agg_interval: aggregation interval
+    
+    Returns:
+        Preprocesed dataframes for each pair
+    '''
     for pair in data:
 
         pair_full_daterange_df = pd.DataFrame(

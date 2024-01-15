@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING: from forex import ForexEnv
 
 class ForexEnvComponent(ABC):
-
+    '''
+    Base class for forex environment components.
+    '''
     def __init__(self) -> None:
         self._env = None
         
@@ -18,25 +20,38 @@ class ForexEnvComponent(ABC):
         self._env = env
 
 
-class ForexOrderStrategy(ForexEnvComponent):
-
+class ForexOrderStrategy(ForexEnvComponent, ABC):
+    '''
+    Base class for forex order placing strategies.
+    '''
     def __init__(self) -> None:
         super().__init__()
 
 
 class ForexMarketOrderStrategy(ForexOrderStrategy):
-
+    '''
+    Base class for forex market order placing strategies.
+    '''
     def __init__(self) -> None:
         super().__init__()
 
     @abstractmethod
     def compute_order_size(self) -> float:
+        '''
+        Calulates order size.
+        '''
         pass
 
 
 class ForexMarketOrderStrategyFixed(ForexMarketOrderStrategy):
-
+    '''
+    Fixed size forex market order placing strategy.
+    '''
     def __init__(self, order_size: float) -> None:
+        '''
+        Args:
+            order_size: order size
+        '''
         super().__init__()
         self._order_size = order_size
 
@@ -45,7 +60,9 @@ class ForexMarketOrderStrategyFixed(ForexMarketOrderStrategy):
     
 
 class ForexMarketOrderStrategyAllIn(ForexMarketOrderStrategy):
-
+    '''
+    All-in forex market order placing strategy.
+    '''
     def __init__(self) -> None:
         super().__init__()
 
@@ -53,18 +70,25 @@ class ForexMarketOrderStrategyAllIn(ForexMarketOrderStrategy):
         return self._env._portfolio_value
 
 
-class ForexRewardStrategy(ForexEnvComponent):
-
+class ForexRewardStrategy(ForexEnvComponent, ABC):
+    '''
+    Base class for forex reward calculation strategies.
+    '''
     def __init__(self) -> None:
         super().__init__()
 
     @abstractmethod
     def compute_reward(self) -> float:
+        '''
+        Calculates reward for current timestep.
+        '''
         pass
 
 
 class ForexRewardStrategyLogPortfolioReturn(ForexRewardStrategy):
-
+    '''
+    Log portfolio return forex reward calculation strategy.
+    '''
     def __init__(self) -> None:
         super().__init__()
 
@@ -81,7 +105,9 @@ class ForexRewardStrategyLogPortfolioReturn(ForexRewardStrategy):
 
 
 class ForexRewardStrategyWeightedLogPortfolioReturns(ForexRewardStrategyLogPortfolioReturn):
-
+    '''
+    Weighted log portfolio returns forex reward calculation strategy.
+    '''
     def __init__(self) -> None:
         super().__init__()
         self._position_t = 1
@@ -108,11 +134,17 @@ class ForexRewardStrategyWeightedLogPortfolioReturns(ForexRewardStrategyLogPortf
 
 
 class ForexTradingCostsStrategy(ForexEnvComponent):
-
+    '''
+    Composite base class for forex trading costs calculation strategies.
+    '''
     def __init__(
         self, 
         trading_costs_strategy_inner: 'ForexTradingCostsStrategy'=None
     ) -> None:
+        '''
+        Args:
+            trading_costs_strategy_inner: inner trading cost calculation strategy
+        '''
         super().__init__()
         self._trading_costs_strategy_inner = trading_costs_strategy_inner
 
@@ -124,12 +156,19 @@ class ForexTradingCostsStrategy(ForexEnvComponent):
 
 
 class ForexTradingCostsStrategyRelativeFee(ForexTradingCostsStrategy):
-
+    '''
+    Relative fee-based forex trading costs calculation strategy.
+    '''
     def __init__(
         self, 
         fee_rate: float,
         trading_costs_strategy_inner: 'ForexTradingCostsStrategy'=None
     ) -> None:
+        '''
+        Args:
+            fee_rate: fee rate
+            trading_costs_strategy_inner: inner trading cost calculation strategy
+        '''
         super().__init__(trading_costs_strategy_inner)
         self._fee_rate = fee_rate
 
@@ -152,12 +191,19 @@ class ForexTradingCostsStrategyRelativeFee(ForexTradingCostsStrategy):
 
 
 class ForexTradingCostsStrategySpread(ForexTradingCostsStrategy):
-
+    '''
+    Spread-based trading costs calculation strategy.
+    '''
     def __init__(
         self, 
         spread: float,
         trading_costs_strategy_inner: 'ForexTradingCostsStrategy'=None,
     ) -> None:
+        '''
+        Args:
+            spread: spread
+            trading_costs_strategy_inner: inner trading cost calculation strategy
+        '''
         super().__init__(trading_costs_strategy_inner)
         self._spread = spread
     

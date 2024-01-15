@@ -6,7 +6,9 @@ from typing import List, Tuple, Dict, Any, Type
 from ._envs import ForexEnv
 
 class TrnOrEvalForexWrapper(gym.Wrapper):
-
+    '''
+    Gym wrapper, switches between training and evaluation modes.
+    '''
     def __init__(
         self, 
         env: ForexEnv,
@@ -16,6 +18,15 @@ class TrnOrEvalForexWrapper(gym.Wrapper):
         trn_wrappers: Dict[Type[gym.Wrapper], Dict[str, Any]]={},
         eval_wrappers: Dict[Type[gym.Wrapper], Dict[str, Any]]={}
     ):
+        '''
+        Args:
+            env: forex environment
+            target_prices_df_eval: evaluation target pair dataframe
+            features_df_eval: evaluation features dataframe,
+            eval: evaluation mode?
+            trn_wrappers: train environment wrappers
+            eval_wrappers: evaluation environment wrappers
+        '''
         super().__init__(env)
 
         if eval:
@@ -30,12 +41,19 @@ class TrnOrEvalForexWrapper(gym.Wrapper):
 
 
 class RandomEpisodeForexWrapper(gym.Wrapper):
-    
+    '''
+    Gym wrapper, trims the episode to desired length starting at random timestamp. 
+    '''
     def __init__(
         self, 
         env: ForexEnv,
         episode_length: int
     ) -> None:
+        '''
+        Args:
+            env: forex environment
+            episode_length: episode length
+        '''
         super().__init__(env)
 
         self._episode_length = episode_length
