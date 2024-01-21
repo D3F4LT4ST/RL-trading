@@ -11,10 +11,7 @@ The RL environment was designed to return a description of the current price dyn
 
 The initial features chosen to represent the environment states were the 8 most recent log returns on the target pair (EUR/USD) price and other 11 Forex trading pairs, calendar features, and the current position value, similar to [Financial Trading as a Game: A Deep Reinforcement Learning Approach](https://arxiv.org/abs/1807.02787). 
 
-The reward was implemented as a log percentage change in portfolio balance between consecutive time steps:
-$$
-r_t = log(\frac{p_t}{p_{t-1}})
-$$.
+The reward was implemented as a log percentage change in portfolio balance between consecutive time steps: $$r_t = log(\frac{p_t}{p_{t-1}})$$
 Two commission types were considered for the task: bid-ask spread and percentage fee.
 
 Additional emphasis was placed on feature engineering by introducing an extended set of features comprising of multiple lagged major technical indicators such as RSI, MACD, Bollinger Bands, and others. 
@@ -42,19 +39,27 @@ Custom fork of [RL Baselines3 Zoo](https://stable-baselines3.readthedocs.io/en/m
 
 ### Results
 
-<center><img src="illustrations/val_mean_episode_rewards.png" ></center>
-<center>Validation set performance of different algorithms during the training process</center>
+<img src="illustrations/val_mean_episode_rewards.png" >
 <br>
 
 In the commission-free environments, PPO model was found to be capable of consistently generating profit several years after training period and outperforming the base exchange rate. The applicability of obtained AI strategies is still limited, primarily due to the commission factor. The conducted experiments have illustrated that introducing any kind of commission severely lowered the agent profitability, irrespective of the architecture. Such effect can be attributed to the high-frequency behavior demonstrated by the agents in zero-fee environments, which results in significant cost being incurred. Performed experiments aimed at teaching the agent to conduct less frequent but confident trades did not produce the desired outcomes. DQN and A2C architectures were observed to converge to simplistic buy-and-hold or sell-and-hold strategies, while the PPO models were found to continue high-frequency trading and thus incur the most losses.
 
-<img src="illustrations/val_ppo_cumulative_returns.png" width="49%"/>
-<img src="illustrations/eval_ppo_cumulative_returns.png" width="49%"/> <br>
-<img src="illustrations/val_ppo_monthly_returns.png" width="49%"/>
-<img src="illustrations/eval_ppo_monthly_returns.png" width="49%"/> <br>
-<img src="illustrations/val_ppo_rolling_sharpe.png" width="49%"/>
-<img src="illustrations/eval_ppo_rolling_sharpe.png" width="49%"/> <br>
-<center>Tuned PPO model performance compared to EUR/USD on validation (left) and evaluation (right) sets</center>
+Tuned PPO model performance compared to EUR/USD on validation (left) and evaluation (right) sets: 
+<br>
+<table>
+    <tr>
+        <td><img src="illustrations/val_ppo_cumulative_returns.png"/></td>
+        <td><img src="illustrations/eval_ppo_cumulative_returns.png"/></td>
+    </tr>
+     <tr>
+        <td><img src="illustrations/val_ppo_monthly_returns.png"></td>
+        <td><img src="illustrations/eval_ppo_monthly_returns.png"/></td>
+    </tr>
+    <tr>
+        <td><img src="illustrations/val_ppo_rolling_sharpe.png"/></td>
+        <td><img src="illustrations/eval_ppo_rolling_sharpe.png"</td>
+    </tr>
+</table> 
 <br>
 
 |                          | PPO Val       | EUR/USD Val | PPO Eval     | EUR/USD Eval|  
