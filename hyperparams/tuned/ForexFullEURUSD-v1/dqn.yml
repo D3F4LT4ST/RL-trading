@@ -1,0 +1,14 @@
+policy: 'MlpPolicy'
+learning_rate: 0.7161314157960552
+buffer_size: 1000000
+learning_starts: 10000
+batch_size: 32
+gamma: 0.9999
+train_freq: 256
+gradient_steps: 256
+target_update_interval: 20000
+exploration_fraction: 0.27632724897297994
+exploration_final_eps: 0.08249059585680803
+policy_kwargs: 'dict(
+  net_arch=[64, 64]
+)'

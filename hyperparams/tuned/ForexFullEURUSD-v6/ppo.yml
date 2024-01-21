@@ -1,0 +1,16 @@
+policy: 'MlpPolicy'
+learning_rate: 2.540384301450344e-05
+n_steps: 8
+batch_size: 512
+n_epochs: 20
+gamma: 0.98
+gae_lambda: 0.98
+clip_range: 0.4
+ent_coef: 0.007501090813037557
+vf_coef: 0.8000479366590776
+max_grad_norm: 5
+policy_kwargs: 'dict(
+  net_arch=[dict(pi=[256, 256], vf=[256, 256])], 
+  activation_fn=nn.ReLU, 
+  ortho_init=False
+)'
