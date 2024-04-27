@@ -1,4 +1,4 @@
-ta
+ta==0.10.2
 gym
 tqdm
 numpy
