@@ -4,8 +4,8 @@ tqdm
 numpy
 pandas
 matplotlib
-stable-baselines3
-sb3-contrib
+stable-baselines3==1.8.0
+sb3-contrib==1.8.0
 lightgbm
 scikit-learn
 statsmodels

@@ -88,5 +88,14 @@ Tuned PPO model performance compared to EUR/USD on validation (left) and evaluat
 ### Installation
 ```
 git clone --recurse-submodules https://github.com/D3F4LT4ST/RL-trading.git
-pip install -r requirements.txt 
+```
+Enable `gym==0.21.0` installation (https://stackoverflow.com/questions/77124879/pip-extras-require-must-be-a-dictionary-whose-values-are-strings-or-lists-of):
+```
+pip install setuptools==65.5.0 pip==21 
+pip install wheel==0.38.0
+```
+Install dependencies:
+```
+pip install -r requirements.txt
+pip install -r rl-baselines3-zoo/requirements.txt
 ```
